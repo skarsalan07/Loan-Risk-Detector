@@ -1,0 +1,22 @@
+artifact_path: file:///C:/Users/skars/OneDrive/Desktop/Loan%20Project/mlruns/0/models/m-d77899f7f89c4d56a3aa49df1823247d/artifacts
+flavors:
+  python_function:
+    data: model.xgb
+    env:
+      conda: conda.yaml
+      virtualenv: python_env.yaml
+    loader_module: mlflow.xgboost
+    python_version: 3.12.2
+  xgboost:
+    code: null
+    data: model.xgb
+    model_class: xgboost.sklearn.XGBClassifier
+    model_format: xgb
+    xgb_version: 3.0.4
+mlflow_version: 3.2.0
+model_id: m-d77899f7f89c4d56a3aa49df1823247d
+model_size_bytes: 1782889
+model_uuid: m-d77899f7f89c4d56a3aa49df1823247d
+prompts: null
+run_id: cce33d42fb824469bc611deccd0fcf1e
+utc_time_created: '2025-08-17 18:55:05.561010'

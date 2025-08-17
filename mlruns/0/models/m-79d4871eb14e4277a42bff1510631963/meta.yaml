@@ -1,0 +1,10 @@
+artifact_location: file:///C:/Users/skars/OneDrive/Desktop/Loan%20Project/mlruns/0/models/m-79d4871eb14e4277a42bff1510631963/artifacts
+creation_timestamp: 1755455989078
+experiment_id: '0'
+last_updated_timestamp: 1755455999561
+model_id: m-79d4871eb14e4277a42bff1510631963
+model_type: null
+name: model
+source_run_id: 1b4431a8f2184650a51381cc5cf064c6
+status: 2
+status_message: null

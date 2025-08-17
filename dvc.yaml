@@ -1,0 +1,33 @@
+stages:
+  prepare:
+    cmd: python src/data_prep.py --input data/raw/loans.csv --output data/processed/clean.csv
+    deps:
+      - src/data_prep.py  
+      - data/raw/loans.csv
+    outs:
+      - data/processed/clean.csv
+
+  feature:
+    cmd: python src/feature_engineer.py --input data/processed/clean.csv --output data/processed/features.csv
+    deps:
+      - src/feature_engineer.py
+      - data/processed/clean.csv
+    outs:
+      - data/processed/features.csv
+
+  train:
+    cmd: python src/train.py --input data/processed/features.csv --model models/xgb_model.json
+    deps:
+      - src/train.py
+      - data/processed/features.csv
+    outs:
+      - models/xgb_model.json
+
+  evaluate:
+    cmd: python src/evaluate.py --model models/xgb_model.json --data data/processed/features.csv --report reports/metrics.json
+    deps:
+      - src/evaluate.py
+      - models/xgb_model.json
+      - data/processed/features.csv
+    outs:
+      - reports/metrics.json
