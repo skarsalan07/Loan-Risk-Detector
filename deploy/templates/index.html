@@ -1,0 +1,787 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>VeriScore AI - Loan Risk Predictor</title>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;700;800&family=Oxanium:wght@400;600;700;800&display=swap" rel="stylesheet">
+  <style>
+    :root {
+      --base-bg: #0a0a14;
+      --glass-bg: rgba(25,25,40,0.8); /* Slightly less transparent */
+      --border-color: rgba(255,255,255,0.12); /* Stronger border */
+      --text-primary: #e0e0f0;
+      --text-secondary: #a0a0c0;
+      --accent-color: #8c5dfd; /* Brighter purple */
+      --glow-color: rgba(140,93,253,0.6); /* Matches accent */
+      --no-risk-color: #00e6a1;
+      --less-risk-color: #ffd93d;
+      --high-risk-color: #ff6384; /* Slightly softer red */
+      --button-gradient-start: #7b4397; /* Deeper purple for main buttons */
+      --button-gradient-end: #dc2430; /* Reddish end for main buttons */
+      --modal-bg: rgba(15,15,25,0.95);
+      --modal-content-bg: rgba(30,30,50,0.95);
+      --close-button-color: #f0f0f5;
+      --section-bg: rgba(255,255,255,0.05); /* Lighter section background */
+    }
+
+    body {
+      font-family: 'Inter', sans-serif;
+      background-color: var(--base-bg);
+      color: var(--text-primary);
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      min-height: 100vh;
+      margin: 0;
+      padding: 20px;
+      transition: background 1s ease;
+      overflow-x: hidden;
+      position: relative;
+      background-image: radial-gradient(circle at top left, rgba(140, 93, 253, 0.15) 0%, transparent 40%),
+                        radial-gradient(circle at bottom right, rgba(220, 36, 48, 0.15) 0%, transparent 40%);
+      background-size: 80% 80%;
+      background-repeat: no-repeat;
+    }
+
+    /* Dynamic background based on prediction theme */
+    body[data-theme="no-risk"] {
+      background: radial-gradient(circle at 50% 50%, #0c4a3b, var(--base-bg) 80%),
+                  radial-gradient(circle at top left, rgba(0, 230, 161, 0.15) 0%, transparent 40%),
+                  radial-gradient(circle at bottom right, rgba(0, 230, 161, 0.1) 0%, transparent 40%);
+      background-size: cover, 80% 80%, 80% 80%;
+      background-repeat: no-repeat;
+    }
+    body[data-theme="less-risk"] {
+      background: radial-gradient(circle at 50% 50%, #4a4a0c, var(--base-bg) 80%),
+                  radial-gradient(circle at top left, rgba(255, 217, 61, 0.15) 0%, transparent 40%),
+                  radial-gradient(circle at bottom right, rgba(255, 217, 61, 0.1) 0%, transparent 40%);
+      background-size: cover, 80% 80%, 80% 80%;
+      background-repeat: no-repeat;
+    }
+    body[data-theme="high-risk"] {
+      background: radial-gradient(circle at 50% 50%, #520c15, var(--base-bg) 80%),
+                  radial-gradient(circle at top left, rgba(255, 99, 132, 0.15) 0%, transparent 40%),
+                  radial-gradient(circle at bottom right, rgba(255, 99, 132, 0.1) 0%, transparent 40%);
+      background-size: cover, 80% 80%, 80% 80%;
+      background-repeat: no-repeat;
+    }
+
+    /* Header Buttons (Developer Portfolio, Dashboard) */
+    .header-buttons {
+        position: fixed;
+        top: 20px;
+        left: 20px;
+        right: 20px;
+        display: flex;
+        justify-content: space-between;
+        z-index: 1000;
+        gap: 15px;
+        flex-wrap: wrap;
+    }
+
+    .header-button {
+        padding: 0.8rem 1.5rem; /* Slightly larger padding */
+        border-radius: 12px; /* More rounded */
+        background: rgba(255,255,255,0.08); /* Darker glass effect */
+        color: var(--text-primary);
+        text-decoration: none;
+        font-weight: 600; /* Bolder font */
+        font-size: 0.95rem; /* Slightly larger text */
+        transition: background 0.3s ease, transform 0.2s ease, box-shadow 0.3s ease, color 0.3s ease;
+        border: 1px solid var(--border-color);
+        backdrop-filter: blur(15px); /* More blur */
+        box-shadow: 0 6px 15px rgba(0,0,0,0.4); /* Stronger shadow */
+        display: inline-flex; /* For icon alignment */
+        align-items: center;
+        gap: 8px; /* Space between text and icon */
+        letter-spacing: 0.03em;
+        cursor: pointer; /* Ensure button-like cursor for button element */
+    }
+
+    .header-button:hover {
+        background: rgba(255,255,255,0.15);
+        transform: translateY(-5px); /* More pronounced lift */
+        box-shadow: 0 12px 25px rgba(0,0,0,0.5);
+        color: var(--accent-color); /* Highlight text on hover */
+    }
+
+    .header-button:active {
+        transform: translateY(0);
+        box-shadow: 0 4px 10px rgba(0,0,0,0.2);
+    }
+
+    .header-button svg {
+        width: 1.2em; /* Icon size relative to font */
+        height: 1.2em;
+        fill: currentColor; /* Inherit color from text */
+        transition: transform 0.3s ease;
+    }
+
+    .header-button:hover svg {
+        transform: rotate(5deg) scale(1.1); /* Subtle icon animation */
+    }
+
+    /* Main Card Styling */
+    .card {
+      background: var(--glass-bg);
+      border: 1px solid var(--border-color);
+      border-radius: 25px; /* More rounded corners */
+      padding: 3rem; /* More generous padding */
+      max-width: 750px; /* Wider card */
+      width: 100%;
+      backdrop-filter: blur(30px); /* More blur */
+      box-shadow: 0 30px 60px rgba(0,0,0,0.6),
+                  inset 0 0 0 1px rgba(255,255,255,0.07); /* More prominent inner shadow */
+      text-align: center;
+      position: relative;
+      overflow: hidden;
+      opacity: 0;
+      transform: translateY(30px); /* More pronounced initial animation */
+      transition: opacity 0.9s ease-out, transform 0.9s ease-out;
+      z-index: 1;
+      margin-top: 80px; /* Give space for header buttons */
+    }
+
+    .card.loaded {
+      opacity: 1;
+      transform: translateY(0);
+    }
+
+    h2 {
+      margin-bottom: 2rem; /* More space below main title */
+      font-size: 2.5rem; /* Larger main title */
+      color: var(--text-primary);
+      text-shadow: 0 0 15px rgba(255,255,255,0.2);
+      font-family: 'Oxanium', sans-serif; /* A more techy font */
+      letter-spacing: 0.05em;
+      font-weight: 800; /* Bolder main title */
+    }
+
+    /* Form Styling */
+    form {
+      display: flex;
+      flex-direction: column; /* Stack sections vertically */
+      gap: 2.5rem; /* More gap between sections */
+      transition: all 0.6s ease-in-out;
+    }
+
+    .form-section {
+      background: var(--section-bg);
+      border: 1px solid rgba(255,255,255,0.08);
+      border-radius: 18px; /* More rounded section corners */
+      padding: 2rem; /* More padding inside sections */
+      text-align: left;
+      box-shadow: inset 0 0 15px rgba(0,0,0,0.25); /* Stronger inner shadow */
+      position: relative;
+      overflow: hidden; /* For subtle gradient background */
+      background-image: linear-gradient(135deg, rgba(140,93,253,0.05) 0%, transparent 50%, rgba(220,36,48,0.05) 100%);
+    }
+
+    .form-section-title {
+      font-size: 1.4rem; /* Larger section title */
+      font-weight: 700;
+      color: var(--text-primary);
+      margin-bottom: 1.5rem; /* More space below title */
+      border-bottom: 1px solid var(--border-color);
+      padding-bottom: 1rem;
+      letter-spacing: 0.04em;
+      font-family: 'Oxanium', sans-serif;
+    }
+
+    .form-grid {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 1.8rem; /* More space between inputs */
+    }
+
+    .form-group {
+      position: relative;
+    }
+
+    label {
+      font-size: 0.9rem; /* Slightly larger label */
+      color: var(--text-secondary);
+      display: block;
+      margin-bottom: 0.5rem; /* More space */
+      text-align: left;
+      letter-spacing: 0.08em; /* More letter spacing */
+      text-transform: uppercase;
+      font-weight: 500;
+    }
+
+    /* --- MODIFIED SELECT/INPUT STYLES BELOW --- */
+    input, select {
+      padding: 1.1rem; /* More padding */
+      border-radius: 12px; /* More rounded inputs */
+      border: 1px solid var(--border-color);
+      background: rgba(0, 0, 0, 0.4); /* Darker, more opaque background for better text visibility */
+      color: var(--text-primary); /* Keeps text white/light */
+      width: 100%;
+      font-size: 1.1rem; /* Larger font */
+      transition: border-color 0.3s ease, box-shadow 0.3s ease, background 0.3s ease;
+      box-shadow: inset 0 1px 3px rgba(0,0,0,0.2); /* Subtle inner shadow */
+    }
+
+    input:hover, select:hover {
+      border-color: rgba(255,255,255,0.25);
+      background: rgba(0, 0, 0, 0.6); /* Even darker on hover */
+    }
+
+    input:focus, select:focus {
+      outline: none;
+      border-color: var(--accent-color);
+      box-shadow: 0 0 20px var(--glow-color), inset 0 1px 5px rgba(0,0,0,0.3); /* Stronger focus glow */
+      background: rgba(0, 0, 0, 0.7); /* Darkest on focus */
+    }
+    /* --- END MODIFIED SELECT/INPUT STYLES --- */
+
+    select {
+      appearance: none;
+      -webkit-appearance: none;
+      background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='%23a0a0c0'%3E%3Cpath d='M7 10l5 5 5-5z'/%3E%3C/svg%3E");
+      background-repeat: no-repeat;
+      background-position: right 1.2rem center; /* Adjust arrow position */
+      background-size: 1.4em; /* Larger arrow */
+    }
+
+    /* Buttons */
+    button[type="submit"] {
+      grid-column: 1 / -1;
+      padding: 1.2rem; /* More padding */
+      border-radius: 12px; /* More rounded */
+      background: linear-gradient(45deg, var(--button-gradient-start), var(--button-gradient-end));
+      color: #fff;
+      font-weight: 700;
+      font-size: 1.2rem; /* Larger font */
+      cursor: pointer;
+      margin-top: 1.5rem; /* More top margin */
+      transition: transform 0.2s ease, box-shadow 0.3s ease, background 0.3s ease;
+      letter-spacing: 0.08em; /* More letter spacing */
+      box-shadow: 0 10px 25px rgba(0,0,0,0.4); /* Stronger shadow */
+      position: relative; /* For pseudo-element glow */
+      overflow: hidden;
+    }
+
+    button[type="submit"]::before {
+        content: '';
+        position: absolute;
+        top: 0;
+        left: -100%;
+        width: 100%;
+        height: 100%;
+        background: linear-gradient(90deg, transparent, rgba(255,255,255,0.2), transparent);
+        transition: left 0.5s ease;
+    }
+
+    button[type="submit"]:hover::before {
+        left: 100%;
+    }
+
+    button[type="submit"]:hover {
+      transform: translateY(-7px); /* More pronounced lift */
+      box-shadow: 0 15px 30px var(--glow-color); /* Stronger glow */
+      background: linear-gradient(45deg, var(--button-gradient-start) -10%, var(--button-gradient-end) 110%);
+    }
+
+    button[type="submit"]:active {
+      transform: translateY(0);
+      box-shadow: 0 7px 18px rgba(0,0,0,0.3);
+    }
+
+    /* Result Container */
+    #result-container {
+      margin-top: 3rem; /* More margin */
+      padding: 2rem 0; /* More padding */
+      border-top: 1px dashed var(--border-color);
+      opacity: 0;
+      transform: translateY(30px);
+      transition: opacity 0.9s cubic-bezier(0.2, 0.8, 0.2, 1), transform 0.9s cubic-bezier(0.2, 0.8, 0.2, 1);
+    }
+
+    #result-container.visible {
+      opacity: 1;
+      transform: translateY(0);
+    }
+
+    #result-icon {
+      font-size: 5rem; /* Larger icon */
+      margin-bottom: 1rem;
+      transition: transform 0.4s ease-out;
+      animation: pulse 1.5s infinite alternate; /* Pulsing animation for icon */
+    }
+
+    @keyframes pulse {
+        from { transform: scale(1); }
+        to { transform: scale(1.05); }
+    }
+
+    #result-container.visible #result-icon {
+      animation: none; /* Stop pulse after initial reveal */
+      transform: scale(1.1);
+    }
+
+    #result-title {
+      font-size: 2.8rem; /* Larger title */
+      font-weight: 800;
+      margin-bottom: 1rem;
+      text-shadow: 0 0 20px rgba(255,255,255,0.25);
+      font-family: 'Oxanium', sans-serif;
+      letter-spacing: 0.04em;
+    }
+
+    #result-msg {
+      font-size: 1.3rem; /* Larger message */
+      color: var(--text-secondary);
+      letter-spacing: 0.03em;
+    }
+
+    /* Specific colors for risk levels */
+    body[data-theme="no-risk"] #result-title,
+    body[data-theme="no-risk"] #result-icon {
+      color: var(--no-risk-color);
+      text-shadow: 0 0 25px rgba(0,230,161,0.6);
+    }
+
+    body[data-theme="less-risk"] #result-title,
+    body[data-theme="less-risk"] #result-icon {
+      color: var(--less-risk-color);
+      text-shadow: 0 0 25px rgba(255,217,61,0.6);
+    }
+
+    body[data-theme="high-risk"] #result-title,
+    body[data-theme="high-risk"] #result-icon {
+      color: var(--high-risk-color);
+      text-shadow: 0 0 25px rgba(255,99,132,0.6);
+    }
+
+    /* Repredict Button specific styling */
+    #repredict-button {
+        margin-top: 2.5rem; /* More margin */
+        background: linear-gradient(45deg, #28a745, #218838); /* Solid green gradient */
+        box-shadow: 0 10px 25px rgba(40,167,69,0.4);
+    }
+
+    #repredict-button:hover {
+        box-shadow: 0 15px 30px rgba(40,167,69,0.6);
+        background: linear-gradient(45deg, #28a745 -10%, #218838 110%);
+    }
+    #repredict-button::before { /* Remove the shimmer effect from this button */
+        content: none;
+    }
+
+    /* Modal Styling */
+    .modal-overlay {
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      background: var(--modal-bg);
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      opacity: 0;
+      visibility: hidden;
+      transition: opacity 0.4s ease, visibility 0.4s ease;
+      z-index: 2000;
+    }
+
+    .modal-overlay.visible {
+      opacity: 1;
+      visibility: visible;
+    }
+
+    .modal-content {
+      background: var(--modal-content-bg);
+      border: 1px solid var(--border-color);
+      border-radius: 25px;
+      padding: 2rem;
+      width: 95%;
+      max-width: 1100px; /* Wider modal */
+      height: 95%;
+      max-height: 900px; /* Taller modal */
+      display: flex;
+      flex-direction: column;
+      position: relative;
+      transform: scale(0.9); /* Starts smaller */
+      opacity: 0;
+      transition: transform 0.4s cubic-bezier(0.2, 0.8, 0.2, 1), opacity 0.4s ease;
+      box-shadow: 0 30px 60px rgba(0,0,0,0.7); /* Stronger shadow */
+      backdrop-filter: blur(20px); /* More blur */
+    }
+
+    .modal-overlay.visible .modal-content {
+      transform: scale(1);
+      opacity: 1;
+    }
+
+    .modal-close-button {
+      position: absolute;
+      top: 20px;
+      right: 20px;
+      background: none;
+      border: none;
+      font-size: 2.5rem; /* Larger close button */
+      color: var(--close-button-color);
+      cursor: pointer;
+      padding: 0;
+      line-height: 1;
+      transition: transform 0.3s ease, color 0.3s ease;
+    }
+
+    .modal-close-button:hover {
+      transform: rotate(90deg) scale(1.1); /* Rotate and scale on hover */
+      color: var(--high-risk-color); /* Red color for close */
+    }
+
+    .modal-title {
+        font-size: 2rem; /* Larger modal title */
+        margin-bottom: 1.5rem;
+        color: var(--text-primary);
+        text-align: center;
+        font-family: 'Oxanium', sans-serif;
+        letter-spacing: 0.03em;
+        font-weight: 700;
+    }
+
+    .pdf-viewer {
+      flex-grow: 1;
+      border: 1px solid var(--border-color);
+      border-radius: 15px;
+      background-color: #f0f0f5;
+      overflow: hidden; /* Ensure PDF content stays within borders */
+    }
+
+    .pdf-viewer iframe {
+      width: 100%;
+      height: 100%;
+      border: none;
+    }
+
+    /* Media Queries for Responsiveness */
+    @media (max-width: 900px) {
+        .card {
+            max-width: 600px;
+            padding: 2.5rem;
+        }
+        .form-section {
+            padding: 1.5rem;
+        }
+        .form-grid {
+            gap: 1.2rem;
+        }
+        input, select {
+            padding: 1rem;
+            font-size: 1rem;
+        }
+        label {
+            font-size: 0.8rem;
+        }
+        h2 {
+            font-size: 2rem;
+        }
+        .form-section-title {
+            font-size: 1.2rem;
+        }
+        button[type="submit"] {
+            font-size: 1.1rem;
+            padding: 1rem;
+        }
+        #result-icon {
+            font-size: 4rem;
+        }
+        #result-title {
+            font-size: 2.2rem;
+        }
+        #result-msg {
+            font-size: 1.1rem;
+        }
+    }
+
+    @media (max-width: 768px) {
+      .header-buttons {
+          flex-direction: column;
+          align-items: flex-start;
+          gap: 10px;
+          top: 15px;
+          left: 15px;
+          right: 15px;
+      }
+      .header-button {
+          font-size: 0.8rem;
+          padding: 0.6rem 1rem;
+          width: fit-content; /* Allow buttons to size based on content */
+      }
+
+      .card {
+        padding: 1.8rem;
+        margin-top: 100px; /* Adjust for header buttons */
+        border-radius: 20px;
+      }
+      form {
+        gap: 1.5rem;
+      }
+      .form-grid {
+        grid-template-columns: 1fr; /* Single column on smaller screens */
+        gap: 1rem;
+      }
+      h2 {
+        font-size: 1.8rem;
+      }
+      .form-section-title {
+        font-size: 1.1rem;
+        margin-bottom: 0.8rem;
+        padding-bottom: 0.6rem;
+      }
+      #result-icon {
+        font-size: 3.5rem;
+      }
+      #result-title {
+        font-size: 2rem;
+      }
+      #result-msg {
+        font-size: 1rem;
+      }
+      button {
+        font-size: 1rem;
+        padding: 0.9rem;
+      }
+
+      .modal-content {
+        width: 95%;
+        height: 95%;
+        padding: 1rem;
+        border-radius: 20px;
+      }
+      .modal-title {
+          font-size: 1.5rem;
+      }
+      .modal-close-button {
+          font-size: 1.8rem;
+          top: 10px;
+          right: 10px;
+      }
+    }
+    @media (max-width: 480px) {
+        .card {
+            padding: 1.2rem;
+            margin-top: 80px;
+        }
+        h2 {
+            font-size: 1.5rem;
+        }
+        .form-section-title {
+            font-size: 1rem;
+        }
+        .header-buttons {
+            gap: 8px;
+            top: 10px;
+            left: 10px;
+            right: 10px;
+        }
+        .header-button {
+            padding: 0.5rem 0.8rem;
+            font-size: 0.75rem;
+            gap: 5px;
+        }
+        .header-button svg {
+            width: 1em;
+            height: 1em;
+        }
+    }
+  </style>
+</head>
+<body data-theme="{{ theme }}">
+
+  <div class="header-buttons">
+      <!-- Developer Portfolio Button -->
+      <!-- REMEMBER TO UPDATE THIS URL TO YOUR ACTUAL PORTFOLIO! -->
+      <a href="https://arsalans-portfolio.onrender.com/" target="_blank" class="header-button">
+          <!-- GitHub Icon SVG -->
+          <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M12 0c-6.626 0-12 5.373-12 12 0 5.302 3.438 9.8 8.207 11.387.599.111.793-.261.793-.577v-2.234c-3.338.726-4.033-1.416-4.033-1.416-.546-1.387-1.333-1.756-1.333-1.756-1.089-.745.083-.729.083-.729 1.205.084 1.839 1.237 1.839 1.237 1.07 1.835 2.809 1.305 3.493.998.108-.77.418-1.305.762-1.604-2.665-.305-5.467-1.334-5.467-5.931 0-1.311.469-2.381 1.236-3.221-.124-.303-.535-1.524.117-3.176 0 0 1-.322 3.293 1.235 0 0 1.944-.537 3.94-.543 1.996.006 3.94.543 3.94.543 2.293-1.557 3.292-1.235 3.292-1.235.652 1.652.241 2.873.118 3.176.77.84 1.235 1.911 1.235 3.221 0 4.609-2.807 5.624-5.479 5.923.43.372.823 1.102.823 2.222v3.293c0 .319.192.694.801.576 4.765-1.589 8.199-6.086 8.199-11.386 0-6.627-5.373-12-12-12z"/></svg>
+          Developer Portfolio
+      </a>
+      <!-- See Dashboard Button -->
+     
+  </div>
+
+  <div class="card" id="main-card">
+    {% if prediction %}
+    <!-- Display Prediction Result -->
+    <div id="result-container" class="visible">
+      <div id="result-icon">
+        {% if 'High' in prediction %}🚨{% elif 'Less' in prediction %}⚠️{% else %}✔️{% endif %}
+      </div>
+      <h2 id="result-title">{{ prediction }}</h2>
+      <p id="result-msg">Default Probability: {{ probability }}</p>
+      <button id="repredict-button">Predict Another Loan</button>
+    </div>
+    {% else %}
+    <!-- Display Prediction Form -->
+    <h2>Loan Risk Predictor</h2>
+    <form method="post" action="/">
+      <div class="form-section">
+        <h3 class="form-section-title">Loan Request Details</h3>
+        <div class="form-grid">
+            <div class="form-group">
+                <label>Loan Amount ($)</label>
+                <input type="number" name="loan_amnt" required placeholder="e.g., 15000">
+            </div>
+            <div class="form-group">
+                <label>Loan Term (Months)</label>
+                <input type="number" name="term_num" required placeholder="e.g., 36">
+            </div>
+            <div class="form-group">
+                <label>Interest Rate (%)</label>
+                <input type="number" step="any" name="int_rate_num" required placeholder="e.g., 12.5">
+            </div>
+            <div class="form-group">
+                <!-- Empty div for layout consistency if only 3 fields in this section -->
+            </div>
+        </div>
+      </div>
+
+      <div class="form-section">
+        <h3 class="form-section-title">Borrower Financials</h3>
+        <div class="form-grid">
+            <div class="form-group">
+                <label>Annual Income ($)</label>
+                <input type="number" name="annual_inc" required placeholder="e.g., 75000">
+            </div>
+            <div class="form-group">
+                <label>Debt-to-Income (DTI)</label>
+                <input type="number" step="any" name="dti" required placeholder="e.g., 18.2">
+            </div>
+        </div>
+      </div>
+
+      <div class="form-section">
+        <h3 class="form-section-title">Borrower Profile</h3>
+        <div class="form-grid">
+            <div class="form-group">
+                <label>Home Ownership</label>
+                <select name="home_ownership" required>
+                  <option value="" disabled selected>Select...</option>
+                  <option value="RENT">Rent</option>
+                  <option value="MORTGAGE">Mortgage</option>
+                  <option value="OWN">Own</option>
+                  <option value="OTHER">Other</option>
+                </select>
+            </div>
+            <div class="form-group">
+                <label>Purpose</label>
+                <select name="purpose" required>
+                  <option value="" disabled selected>Select...</option>
+                  <option value="debt_consolidation">Debt Consolidation</option>
+                  <option value="credit_card">Credit Card</option>
+                  <option value="home_improvement">Home Improvement</option>
+                  <option value="small_business">Small Business</option>
+                  <option value="medical">Medical</option>
+                  <option value="car">Car</option>
+                  <option value="wedding">Wedding</option>
+                  <option value="other">Other</option>
+                </select>
+            </div>
+            <div class="form-group">
+                <label>Verification Status</label>
+                <select name="verification_status" required>
+                  <option value="" disabled selected>Select...</option>
+                  <option value="Verified">Verified</option>
+                  <option value="Source Verified">Source Verified</option>
+                  <option value="Not Verified">Not Verified</option>
+                </select>
+            </div>
+            <div class="form-group">
+                <!-- Empty div for layout consistency if only 3 fields in this section -->
+            </div>
+        </div>
+      </div>
+
+      <button type="submit">Predict Risk</button>
+    </form>
+    {% endif %}
+  </div>
+
+  <!-- Modal for Dashboard PDF -->
+  <div class="modal-overlay" id="dashboard-modal">
+    <div class="modal-content">
+      <button class="modal-close-button" id="modal-close-button">&times;</button>
+      <h3 class="modal-title">Risk Dashboard Overview</h3>
+      <div class="pdf-viewer">
+        <!-- 
+          IMPORTANT: Replace the src below with the direct, publicly accessible URL of YOUR dashboard PDF.
+          Example: If you upload your PDF to Google Drive and get a public sharing link.
+          If your PDF is NOT publicly accessible via a URL, it cannot be displayed without modifying server.py.
+        -->
+        <iframe id="pdf-iframe" src="https://drive.google.com/file/d/1JjASrO-i4jr9jmdoY7OVaiGFB-8pUsTm/view?usp=sharing" frameborder="0" title="Dashboard PDF"></iframe>
+      </div>
+    </div>
+  </div>
+
+  <script>
+    // JavaScript to handle "Predict Another Loan" button
+    const repredictButton = document.getElementById('repredict-button');
+    if (repredictButton) {
+        repredictButton.addEventListener('click', () => {
+            window.location.href = '/'; // Redirects to the home route, clearing prediction
+        });
+    }
+
+    // JavaScript for Header Buttons and Modal
+    const dashboardButton = document.getElementById('dashboard-button');
+    const dashboardModal = document.getElementById('dashboard-modal');
+    const modalCloseButton = document.getElementById('modal-close-button');
+    const pdfIframe = document.getElementById('pdf-iframe');
+
+    // Function to open modal
+    function openModal() {
+        dashboardModal.classList.add('visible');
+    }
+
+    // Function to close modal
+    function closeModal() {
+        dashboardModal.classList.remove('visible');
+        // Clear iframe src to stop PDF loading/memory usage and prevent persistent connection
+        pdfIframe.src = 'about:blank'; // Use about:blank to clear content cleanly
+    }
+
+    // Event Listeners for modal
+    if (dashboardButton) {
+        dashboardButton.addEventListener('click', openModal);
+    }
+    if (modalCloseButton) {
+        modalCloseButton.addEventListener('click', closeModal);
+    }
+    // Close modal if clicking outside content
+    if (dashboardModal) {
+        dashboardModal.addEventListener('click', (event) => {
+            if (event.target === dashboardModal) {
+                closeModal();
+            }
+        });
+    }
+
+    // Add animation for the card on page load
+    document.addEventListener('DOMContentLoaded', () => {
+        const mainCard = document.getElementById('main-card');
+        if (mainCard) {
+            mainCard.classList.add('loaded');
+        }
+
+        // Ensure result container animation plays if it's rendered visible by Jinja2
+        const resultContainer = document.getElementById('result-container');
+        if (resultContainer && resultContainer.classList.contains('visible')) {
+            // Force reflow to restart CSS animation if page is reloaded with result already present
+            resultContainer.style.animation = 'none';
+            resultContainer.offsetHeight; /* trigger reflow */
+            resultContainer.style.animation = null;
+            resultContainer.style.opacity = '1';
+            resultContainer.style.transform = 'translateY(0)';
+            // Re-apply visible class to trigger CSS transitions again
+            resultContainer.classList.add('visible');
+        }
+    });
+  </script>
+</body>
+</html>
