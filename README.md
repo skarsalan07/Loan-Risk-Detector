@@ -146,20 +146,22 @@ uvicorn deploy.serve:app --reload
 ```
 ➡ Head to: http://127.0.0.1:8000
 ```
-###📊 Results
+### 📊 Results
 - Loan applicants segmented into No Risk / Less Risk / High Risk categories with predicted probability of default
-DVC pipelines → new data triggers reproducible training & feature engineering
-MLflow tracking → experiments logged with parameters, AUC/Accuracy, and models
-Render deployment → real-time loan risk analysis demo available for end-users
-🎯 Future Enhancements
+- DVC pipelines → new data triggers reproducible training & feature engineering
+- MLflow tracking → experiments logged with parameters, AUC/Accuracy, and models
+- Render deployment → real-time loan risk analysis demo available for end-users
+  
+### 🎯 Future Enhancements
 ✅ Add Hyperparameter Optimization (Optuna or Bayesian Optimization)
 ✅ Add more domain features (credit grade, employment length, delinquency history)
 ✅ Role-based dashboards (Applicant vs Analyst views)
 ✅ Auto-retraining CI/CD (GitHub Actions → Auto-deploy to Render)
 ✅ Containerization with Docker for scalable deployment
-👨‍💻 Author
-Developed by Your Name – Data Science & MLOps Enthusiast 👨‍💻
 
-🔗 LinkedIn | 🌐 Render Demo | 📂 GitHub Repo
+### 👨‍💻 Author
+Developed by Arsalan Shaikh – Data Science & MLOps Enthusiast 👨‍💻
+
+🔗 [LinkedIn](https://www.linkedin.com/in/arsalanshaikh123/) | 🌐 [Render](https://loan-risk-detector.onrender.com/) Demo | 📂 https://github.com/skarsalan07/Loan-Risk-Detector GitHub Repo
 
 
