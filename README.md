@@ -83,7 +83,7 @@ Deployment to Render (Cloud Hosting)
 <details>
 <summary>🟢 No Risk Case</summary>  
 <br>  
-No Risk Example  
+![No Risk Example](./Screenshots/no risk.png)
 </details>
 
 <details>
