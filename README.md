@@ -1,6 +1,6 @@
 # VeriScore AI – Loan Risk Intelligence System
 
-🚀 **Live Demo**: [Click here to try the app](https://your-render-link-here)  
+🚀 **Live Demo**: https://loan-risk-detector.onrender.com/
 
 An end-to-end deployed machine learning system that predicts **loan applicant risk** levels into:  
 - ✅ No Risk  
@@ -48,3 +48,11 @@ FastAPI Backend serving predictions
 Frontend (HTML/CSS/JS Single Page App + Dashboard PDF)
    ↓
 Deployment to Render (Cloud Hosting)
+```
+✨ Features
+Risk Segmentation → 3-level classification: No Risk ✅, Less Risk ⚠️, High Risk 🚨
+Dynamic Theming UI with glowing backgrounds depending on risk flag
+PDF Dashboard Viewer → embedded analytics report (Bank loan insights)
+MLOps-Ready → [DVC] for pipelines & data versioning, [MLflow] for experiment tracking
+Encoders Saved (encoders.pkl) → ensures categorical encoding consistency
+Render Deployed → accessible demo link for stakeholders
