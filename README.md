@@ -49,10 +49,69 @@ Frontend (HTML/CSS/JS Single Page App + Dashboard PDF)
    ↓
 Deployment to Render (Cloud Hosting)
 ```
-✨ Features
-Risk Segmentation → 3-level classification: No Risk ✅, Less Risk ⚠️, High Risk 🚨
-Dynamic Theming UI with glowing backgrounds depending on risk flag
-PDF Dashboard Viewer → embedded analytics report (Bank loan insights)
-MLOps-Ready → [DVC] for pipelines & data versioning, [MLflow] for experiment tracking
-Encoders Saved (encoders.pkl) → ensures categorical encoding consistency
-Render Deployed → accessible demo link for stakeholders
+
+- **Risk Segmentation** → 3-level classification:  
+  - ✅ No Risk  
+  - ⚠️ Less Risk  
+  - 🚨 High Risk  
+
+- **Dynamic Theming UI** → glowing backgrounds depending on risk flag  
+- **PDF Dashboard Viewer** → embedded analytics report (Bank loan insights)  
+- **MLOps-Ready** → [DVC] for pipelines & data versioning, [MLflow] for experiment tracking  
+- **Encoders Saved (`encoders.pkl`)** → ensures categorical encoding consistency  
+- **Render Deployed** → accessible demo link for stakeholders  
+
+---
+
+## 🛠️ Tech Stack
+
+**Languages:** Python, HTML, CSS, JavaScript  
+**Machine Learning:** Scikit-learn, XGBoost  
+
+**MLOps:**  
+- [DVC] → dataset & pipeline versioning  
+- [MLflow] → experiment logging, model registry  
+
+**Backend:** FastAPI, Uvicorn  
+**Frontend:** HTML/CSS/JS (single-page UI with animations)  
+**Deployment:** Render Cloud Hosting  
+
+---
+
+## 📸 Screenshots
+
+<details>
+<summary>🟢 No Risk Case</summary>  
+<br>  
+No Risk Example  
+</details>
+
+<details>
+<summary>⚠️ Less Risk Case</summary>  
+<br>  
+Less Risk Example  
+</details>
+
+<details>
+<summary>🚨 High Risk Case</summary>  
+<br>  
+High Risk Example  
+</details>
+
+<details>
+<summary>📊 Dashboard PDF Viewer</summary>  
+<br>  
+Dashboard Example  
+</details>  
+
+---
+
+## ⚡ Setup & Run Locally
+
+<details>
+<summary>📥 Installation & Setup Steps</summary>  
+
+### 1️⃣ Clone repository
+```bash
+git clone https://github.com/your-username/veriscore-ai.git
+cd veriscore-ai
