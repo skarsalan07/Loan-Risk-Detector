@@ -153,11 +153,11 @@ uvicorn deploy.serve:app --reload
 - Render deployment → real-time loan risk analysis demo available for end-users
   
 ### 🎯 Future Enhancements
--✅ Add Hyperparameter Optimization (Optuna or Bayesian Optimization)
--✅ Add more domain features (credit grade, employment length, delinquency history)
--✅ Role-based dashboards (Applicant vs Analyst views)
--✅ Auto-retraining CI/CD (GitHub Actions → Auto-deploy to Render)
--✅ Containerization with Docker for scalable deployment
+- ✅ Add Hyperparameter Optimization (Optuna or Bayesian Optimization)
+- ✅ Add more domain features (credit grade, employment length, delinquency history)
+- ✅ Role-based dashboards (Applicant vs Analyst views)
+- ✅ Auto-retraining CI/CD (GitHub Actions → Auto-deploy to Render)
+- ✅ Containerization with Docker for scalable deployment
 
 ### 👨‍💻 Author
 Developed by Arsalan Shaikh – Data Science & MLOps Enthusiast 👨‍💻
