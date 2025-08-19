@@ -115,3 +115,51 @@ Dashboard Example
 ```bash
 git clone https://github.com/your-username/veriscore-ai.git
 cd veriscore-ai
+```
+### 2️⃣ Create & activate virtual environment
+```Bash
+
+python -m venv venv
+source venv/bin/activate        # Windows: venv\Scripts\activate
+```
+### 3️⃣ Install dependencies
+```Bash
+
+pip install -r requirements.txt
+```
+### 4️⃣ Run pipeline (DVC)
+```Bash
+
+dvc repro
+```
+### 5️⃣ Launch MLflow UI (optional, to see experiments)
+```Bash
+
+mlflow ui     # open: http://127.0.0.1:5000
+```
+### 6️⃣ Start FastAPI backend
+```Bash
+
+uvicorn deploy.serve:app --reload
+```
+### 7️⃣ Open App
+```
+➡ Head to: http://127.0.0.1:8000
+```
+###📊 Results
+- Loan applicants segmented into No Risk / Less Risk / High Risk categories with predicted probability of default
+DVC pipelines → new data triggers reproducible training & feature engineering
+MLflow tracking → experiments logged with parameters, AUC/Accuracy, and models
+Render deployment → real-time loan risk analysis demo available for end-users
+🎯 Future Enhancements
+✅ Add Hyperparameter Optimization (Optuna or Bayesian Optimization)
+✅ Add more domain features (credit grade, employment length, delinquency history)
+✅ Role-based dashboards (Applicant vs Analyst views)
+✅ Auto-retraining CI/CD (GitHub Actions → Auto-deploy to Render)
+✅ Containerization with Docker for scalable deployment
+👨‍💻 Author
+Developed by Your Name – Data Science & MLOps Enthusiast 👨‍💻
+
+🔗 LinkedIn | 🌐 Render Demo | 📂 GitHub Repo
+
+
